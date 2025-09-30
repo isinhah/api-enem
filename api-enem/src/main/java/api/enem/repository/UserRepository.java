@@ -1,7 +1,7 @@
 package api.enem.repository;
 
 import api.enem.model.User;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends Repository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 }
