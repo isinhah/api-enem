@@ -1,7 +1,5 @@
 package api.enem.model;
 
-import api.enem.model.enums.Discipline;
-import api.enem.model.enums.Language;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,16 +43,14 @@ public class Question implements Serializable {
     @Column(nullable = false)
     private String alternativesIntroduction;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "discipline_value", nullable = false)
-    private Discipline discipline;
+    private String discipline;
 
     @Column(name = "discipline_label", nullable = false, length = 150)
     private String disciplineLabel;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "language_value", nullable = false)
-    private Language language;
+    private String language;
 
     @Column(name = "language_label", nullable = false, length = 150)
     private String languageLabel;

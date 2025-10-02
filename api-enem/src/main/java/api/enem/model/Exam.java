@@ -24,7 +24,7 @@ public class Exam implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false, length = 100)
+    @Column(unique = true, nullable = false, length = 100)
     private String title;
 
     @Column(nullable = false, name = "exam_year")
