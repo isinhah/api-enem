@@ -17,27 +17,29 @@ public class UserController {
 
     private final UserService userService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         UserResponseDto userResponseDto = userService.getById(id);
         return ResponseEntity.ok(userResponseDto);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
         Page<UserResponseDto> page = userService.getAll(pageable);
         return ResponseEntity.ok(page);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<UserResponseDto> create(@RequestBody UserRequestDto dto) {
-        UserResponseDto userResponseDto = userService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
+    public UserResponseDto create(@RequestBody UserRequestDto dto) {
+        return userService.create(dto);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> update(@PathVariable Long id, @RequestBody UserRequestDto dto) {
-        UserResponseDto userResponseDto = userService.update(id, dto);
-        return ResponseEntity.ok(userResponseDto);
+    public UserResponseDto update(@PathVariable Long id, @RequestBody UserRequestDto dto) {
+        return userService.update(id, dto);
     }
 }
