@@ -15,5 +15,5 @@ public interface ExamDisciplineMapper {
     @Mapping(target = "value", source = "value")
     ExamDiscipline toEntity(ExamResponseDto.Discipline dto);
 
-    ExamResponseDto.Discipline toDto(ExamDiscipline entity);
+    ExamResponseDto.Discipline toResponseDto(ExamDiscipline entity);
 }

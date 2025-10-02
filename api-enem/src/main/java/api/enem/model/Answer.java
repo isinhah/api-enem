@@ -28,7 +28,7 @@ public class Answer implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "alternative_id", nullable = false)
-    private Alternative selectedAlternative;
+    private QuestionAlternative selectedAlternative;
 
     @ManyToOne
     @JoinColumn(name = "mockExam_id", nullable = false)

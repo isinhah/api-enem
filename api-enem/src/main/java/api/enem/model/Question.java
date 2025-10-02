@@ -1,5 +1,6 @@
 package api.enem.model;
 
+import api.enem.model.enums.AlternativeOption;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class Question implements Serializable {
     @Column(nullable = false)
     private String title;
 
+    @Lob
     @Column(nullable = false)
     private String context; // enunciado
 
@@ -37,26 +39,27 @@ public class Question implements Serializable {
     @CollectionTable(name = "tb_question_files", joinColumns = @JoinColumn(name = "question_id"))
     private List<String> files = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 1)
-    private String correctAlternative;
+    private AlternativeOption correctAlternative;
 
     @Column(nullable = false)
     private String alternativesIntroduction;
 
-    @Column(name = "discipline_value", nullable = false)
+    @Column(name = "discipline_value")
     private String discipline;
 
-    @Column(name = "discipline_label", nullable = false, length = 150)
+    @Column(name = "discipline_label", length = 150)
     private String disciplineLabel;
 
-    @Column(name = "language_value", nullable = false)
+    @Column(name = "language_value")
     private String language;
 
-    @Column(name = "language_label", nullable = false, length = 150)
+    @Column(name = "language_label", length = 150)
     private String languageLabel;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<Alternative> alternatives = new ArrayList<>();
+    private List<QuestionAlternative> alternatives = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "exam_id")

@@ -15,5 +15,5 @@ public interface ExamLanguageMapper {
     @Mapping(target = "value", source = "value")
     ExamLanguage toEntity(ExamResponseDto.Language dto);
 
-    ExamResponseDto.Language toDto(ExamLanguage entity);
+    ExamResponseDto.Language toResponseDto(ExamLanguage entity);
 }

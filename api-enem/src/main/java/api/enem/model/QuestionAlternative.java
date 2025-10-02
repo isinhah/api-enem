@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "tb_alternatives")
-public class Alternative implements Serializable {
+public class QuestionAlternative implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,7 +31,7 @@ public class Alternative implements Serializable {
     private String text;
 
     @Column(length = 2048)
-    private String urlFile;
+    private String file;
 
     @Column(nullable = false)
     private boolean isCorrect;
@@ -43,7 +43,7 @@ public class Alternative implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Alternative that = (Alternative) o;
+        QuestionAlternative that = (QuestionAlternative) o;
         return Objects.equals(id, that.id);
     }
 
