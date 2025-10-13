@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,6 +19,12 @@ public class ExamController {
     @GetMapping
     public Page<ExamResponseDto> getAll(Pageable pageable) {
         return examService.getAll(pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{year}")
+    public ExamResponseDto getByYear(@PathVariable int year) {
+        return examService.getByYear(year);
     }
 
     @ResponseStatus(HttpStatus.OK)

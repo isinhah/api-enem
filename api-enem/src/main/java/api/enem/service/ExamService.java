@@ -1,18 +1,17 @@
 package api.enem.service;
 
+import api.enem.model.Exam;
 import api.enem.repository.ExamRepository;
 import api.enem.web.dto.exam.ExamResponseDto;
 import api.enem.web.mapper.ExamMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +26,14 @@ public class ExamService {
     public Page<ExamResponseDto> getAll(Pageable pageable) {
         return examRepository.findAll(pageable)
                 .map(examMapper::toResponseDto);
+    }
+
+    public ExamResponseDto getByYear(int year) {
+        Exam exam = examRepository.findByYear(year).orElseThrow(
+                () -> {throw new RuntimeException("No exams found in the database.");}
+        );
+
+        return examMapper.toResponseDto(exam);
     }
 
     @Transactional
