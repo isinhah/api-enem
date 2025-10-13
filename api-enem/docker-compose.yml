@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: enem-postgres
+    environment:
+      POSTGRES_DB: enem_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - enem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enem-app
+    environment:
+      POSTGRES_HOST: jdbc:postgresql://postgres:5432/enem_db
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - enem-network
+
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: enem-pgweb
+    environment:
+      PGWEB_DATABASE_URL: postgres://postgres:postgres@postgres:5432/enem_db?sslmode=disable
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - enem-network
+
+volumes:
+  postgres_data:
+
+networks:
+  enem-network:
+    driver: bridge
