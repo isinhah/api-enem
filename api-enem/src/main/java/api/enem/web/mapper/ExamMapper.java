@@ -4,14 +4,14 @@ import api.enem.model.Exam;
 import api.enem.web.dto.exam.ExamResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = {ExamDisciplineMapper.class, ExamLanguageMapper.class})
+@Mapper(componentModel = "spring", uses = {ExamDisciplineMapper.class, ExamLanguageMapper.class})
 public interface ExamMapper {
 
-    ExamMapper INSTANCE = Mappers.getMapper(ExamMapper.class);
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "year", source = "year")
+    @Mapping(target = "disciplines", source = "disciplines")
+    @Mapping(target = "languages", source = "languages")
     Exam toEntity(ExamResponseDto examResponseDto);
 
     ExamResponseDto toResponseDto(Exam exam);

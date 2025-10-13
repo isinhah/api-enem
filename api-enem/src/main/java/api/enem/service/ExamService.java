@@ -18,6 +18,7 @@ import java.util.List;
 @Service
 public class ExamService {
 
+    private final ExamMapper examMapper;
     private final ExamRepository examRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final String examsUrl = "https://api.enem.dev/v1/exams";
@@ -25,7 +26,7 @@ public class ExamService {
     // Retorna provas salvas
     public Page<ExamResponseDto> getAll(Pageable pageable) {
         return examRepository.findAll(pageable)
-                .map(ExamMapper.INSTANCE::toResponseDto);
+                .map(examMapper::toResponseDto);
     }
 
     // Consome provas da API mas não salva no banco de dados
@@ -49,13 +50,13 @@ public class ExamService {
 
         if (examsDto != null) {
             Arrays.stream(examsDto)
-                    .map(ExamMapper.INSTANCE::toEntity)
+                    .map(examMapper::toEntity)
                     .filter(exam -> !existsByTitle(exam.getTitle()))
                     .forEach(examRepository::save);
         }
 
         return examRepository.findAll(pageable)
-                .map(ExamMapper.INSTANCE::toResponseDto);
+                .map(examMapper::toResponseDto);
     }
 
     private boolean existsByTitle(String title) {

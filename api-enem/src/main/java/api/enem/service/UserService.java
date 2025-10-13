@@ -16,16 +16,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     public UserResponseDto getById(Long id) {
         User user = findById(id);
-        return UserMapper.INSTANCE.toResponseDto(user);
+        return userMapper.toResponseDto(user);
     }
 
     public Page<UserResponseDto> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
-                .map(UserMapper.INSTANCE::toResponseDto);
+                .map(userMapper::toResponseDto);
     }
 
     @Transactional
@@ -49,14 +50,14 @@ public class UserService {
         user.setPassword(dto.password());
 
         User updatedUser = userRepository.save(user);
-        return UserMapper.INSTANCE.toResponseDto(updatedUser);
+        return userMapper.toResponseDto(updatedUser);
     }
 
     private UserResponseDto saveUserWithRole(UserRequestDto dto, Role role) {
-        User user = UserMapper.INSTANCE.toEntity(dto);
+        User user = userMapper.toEntity(dto);
         user.setRole(role);
         userRepository.save(user);
-        return UserMapper.INSTANCE.toResponseDto(user);
+        return userMapper.toResponseDto(user);
     }
 
     private void findByEmail(String email) {

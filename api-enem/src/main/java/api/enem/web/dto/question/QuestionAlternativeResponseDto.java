@@ -6,6 +6,6 @@ public record QuestionAlternativeResponseDto(
         AlternativeOption letter,
         String text,
         String file,
-        boolean isCorrect
+        boolean correct
 ) {
 }

@@ -4,17 +4,17 @@ import api.enem.model.QuestionAlternative;
 import api.enem.web.dto.question.QuestionAlternativeResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface QuestionAlternativeMapper {
-
-    QuestionAlternativeMapper INSTANCE = Mappers.getMapper(QuestionAlternativeMapper.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "question", ignore = true)
+    @Mapping(target = "text", source = "text")
+    @Mapping(target = "file", source = "file")
+    @Mapping(target = "correct", source = "correct")
+    @Mapping(target = "letter", source = "letter")
     QuestionAlternative toEntity(QuestionAlternativeResponseDto dto);
 
     QuestionAlternativeResponseDto toDto(QuestionAlternative entity);
 }
-

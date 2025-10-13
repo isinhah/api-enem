@@ -4,12 +4,9 @@ import api.enem.model.ExamLanguage;
 import api.enem.web.dto.exam.ExamResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ExamLanguageMapper {
-
-    ExamLanguageMapper INSTANCE = Mappers.getMapper(ExamLanguageMapper.class);
 
     @Mapping(target = "label", source = "label")
     @Mapping(target = "value", source = "value")

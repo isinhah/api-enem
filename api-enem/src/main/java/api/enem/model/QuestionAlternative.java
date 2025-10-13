@@ -34,7 +34,7 @@ public class QuestionAlternative implements Serializable {
     private String file;
 
     @Column(nullable = false)
-    private boolean isCorrect;
+    private boolean correct;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "question_id", nullable = false)
