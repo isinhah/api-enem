@@ -11,6 +11,8 @@ import api.enem.web.mapper.QuestionAlternativeMapper;
 import api.enem.web.mapper.QuestionMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,6 +31,16 @@ public class QuestionService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String questionsUrl = "https://api.enem.dev/v1/exams/{year}/questions";
+
+    public Page<QuestionResponseDto> getByDiscipline(String discipline, Pageable pageable) {
+        Page<Question> questions = questionRepository.findByDiscipline(discipline, pageable);
+
+        if (questions.isEmpty()) {
+            throw new IllegalStateException("No questions found for discipline: " + discipline);
+        }
+
+        return questions.map(questionMapper::toResponseDto);
+    }
 
     private QuestionApiResponse callApi(Integer year) {
         return restTemplate.getForObject(questionsUrl, QuestionApiResponse.class, year);

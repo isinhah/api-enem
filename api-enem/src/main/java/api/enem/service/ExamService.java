@@ -30,7 +30,7 @@ public class ExamService {
 
     public ExamResponseDto getByYear(int year) {
         Exam exam = examRepository.findByYear(year).orElseThrow(
-                () -> {throw new RuntimeException("No exams found in the database.");}
+                () -> new RuntimeException("No exams found in the database.")
         );
 
         return examMapper.toResponseDto(exam);

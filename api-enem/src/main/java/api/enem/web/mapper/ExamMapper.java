@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface ExamMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "questions", ignore = true)
     @Mapping(target = "year", source = "year")
     @Mapping(target = "disciplines", source = "disciplines")
     @Mapping(target = "languages", source = "languages")
