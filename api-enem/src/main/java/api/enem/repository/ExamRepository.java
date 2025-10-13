@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface ExamRepository extends JpaRepository<Exam, UUID> {
     boolean existsByTitle(String title);
-    Optional<Exam> findByYear(Integer year);
+    Optional<Exam> findByYear(int year);
 }

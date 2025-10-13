@@ -25,12 +25,6 @@ public class ExamController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/fetch")
-    public Page<ExamResponseDto> fetchExams(Pageable pageable) {
-        return examService.fetchExamsFromApi(pageable);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/fetch-and-save")
     public Page<ExamResponseDto> fetchAndSaveExams(Pageable pageable) {
         return examService.fetchAndSaveExamsFromApi(pageable);

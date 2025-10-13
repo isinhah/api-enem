@@ -32,7 +32,6 @@ public class Question implements Serializable {
     private String title;
 
     @Lob
-    @Column(nullable = false)
     private String context; // enunciado
 
     @ElementCollection
@@ -43,6 +42,7 @@ public class Question implements Serializable {
     @Column(nullable = false, length = 1)
     private AlternativeOption correctAlternative;
 
+    @Lob
     @Column(nullable = false)
     private String alternativesIntroduction;
 

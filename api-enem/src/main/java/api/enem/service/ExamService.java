@@ -20,30 +20,15 @@ public class ExamService {
 
     private final ExamMapper examMapper;
     private final ExamRepository examRepository;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final String examsUrl = "https://api.enem.dev/v1/exams";
 
-    // Retorna provas salvas
     public Page<ExamResponseDto> getAll(Pageable pageable) {
         return examRepository.findAll(pageable)
                 .map(examMapper::toResponseDto);
     }
 
-    // Consome provas da API mas não salva no banco de dados
-    public Page<ExamResponseDto> fetchExamsFromApi(Pageable pageable) {
-        ExamResponseDto[] examsDto = restTemplate.getForObject(examsUrl, ExamResponseDto[].class);
-
-        if (examsDto == null) {
-            return Page.empty(pageable);
-        }
-
-        List<ExamResponseDto> page = Arrays.stream(examsDto)
-                .toList();
-
-        return new PageImpl<>(page, pageable, examsDto.length);
-    }
-
-    // Consome provas da API e salva no banco de dados
     @Transactional
     public Page<ExamResponseDto> fetchAndSaveExamsFromApi(Pageable pageable) {
         ExamResponseDto[] examsDto = restTemplate.getForObject(examsUrl, ExamResponseDto[].class);
