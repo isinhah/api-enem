@@ -11,6 +11,7 @@ import api.enem.web.mapper.QuestionAlternativeMapper;
 import api.enem.web.mapper.QuestionMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -33,8 +34,9 @@ public class QuestionService {
         return restTemplate.getForObject(questionsUrl, QuestionApiResponse.class, year);
     }
 
+    @Async
     @Transactional
-    public String fetchAndSaveQuestionsForAllExams() {
+    public void fetchAndSaveQuestionsForAllExams() {
         List<Exam> exams = examRepository.findAll();
 
         if (exams.isEmpty()) {
@@ -54,7 +56,7 @@ public class QuestionService {
             }
         }
 
-        return "The questions have been saved!";
+        System.out.println("Finished saving all questions!");
     }
 
     @Transactional

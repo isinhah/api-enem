@@ -1,11 +1,12 @@
 package api.enem.web.controller;
 
 import api.enem.service.QuestionService;
-import api.enem.web.dto.question.QuestionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,6 +18,7 @@ public class QuestionController {
     @GetMapping("/fetch-and-save")
     @ResponseStatus(HttpStatus.OK)
     public String saveQuestionsForAllExams() {
-        return questionService.fetchAndSaveQuestionsForAllExams();
+        questionService.fetchAndSaveQuestionsForAllExams();
+        return "Process started in background. Check logs for progress.";
     }
 }
