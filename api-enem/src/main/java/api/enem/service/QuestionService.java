@@ -7,6 +7,7 @@ import api.enem.repository.ExamRepository;
 import api.enem.repository.QuestionRepository;
 import api.enem.web.dto.external_api.QuestionApiResponse;
 import api.enem.web.dto.question.QuestionResponseDto;
+import api.enem.web.exception.*;
 import api.enem.web.mapper.QuestionAlternativeMapper;
 import api.enem.web.mapper.QuestionMapper;
 import jakarta.transaction.Transactional;
@@ -39,7 +40,7 @@ public class QuestionService {
         Page<Question> questions = questionRepository.findByDiscipline(discipline, pageable);
 
         if (questions.isEmpty()) {
-            throw new IllegalStateException("No questions found for discipline: " + discipline);
+            throw new NoQuestionsFoundException("No questions found for discipline: " + discipline);
         }
 
         return questions.map(questionMapper::toResponseDto);
@@ -49,7 +50,7 @@ public class QuestionService {
         Page<Question> questions = questionRepository.findByContextContainingIgnoreCase(context, pageable);
 
         if (questions.isEmpty()) {
-            throw new IllegalStateException("No questions found for context: " + context);
+            throw new NoQuestionsFoundException("No questions found for context: " + context);
         }
 
         return questions.map(questionMapper::toResponseDto);
@@ -59,7 +60,7 @@ public class QuestionService {
         Page<Question> questions = questionRepository.findByExamId(examId, pageable);
 
         if (questions.isEmpty()) {
-            throw new IllegalStateException("No questions found for exam with id: " + examId);
+            throw new NoQuestionsFoundException("No questions found for Exam with id: " + examId);
         }
 
         return questions.map(questionMapper::toResponseDto);
@@ -75,7 +76,7 @@ public class QuestionService {
         List<Exam> exams = examRepository.findAll();
 
         if (exams.isEmpty()) {
-            throw new IllegalStateException("No exams found in the database. Please save exams before fetching questions.");
+            throw new NoExamsFoundException();
         }
 
         for (Exam exam : exams) {
@@ -85,7 +86,9 @@ public class QuestionService {
                 Thread.sleep(7000);
             } catch (HttpClientErrorException.TooManyRequests e) {
                 log.warn("API rate limit reached. Waiting 10 seconds before retrying...");
-                try { Thread.sleep(10000); } catch (InterruptedException ignored) {}
+                try { Thread.sleep(10000); } catch (InterruptedException ignored) {
+                    throw new ExternalApiRateLimitException("API rate limit exceeded for year " + exam.getYear());
+                }
             } catch (Exception e) {
                 log.error("Error while saving questions for exam year {}: {}", exam.getYear(), e.getMessage(), e);
             }
@@ -103,7 +106,7 @@ public class QuestionService {
         }
 
         Exam exam = examRepository.findByYear(year)
-                .orElseThrow(() -> new RuntimeException("Exam not found for year " + year));
+                .orElseThrow(() -> new NoExamsFoundException("Exam not found for year " + year));
 
         for (QuestionResponseDto dto : response.questions()) {
             boolean exists = questionRepository.existsByExamAndIndex(exam, dto.index());

@@ -5,6 +5,8 @@ import api.enem.model.enums.Role;
 import api.enem.repository.UserRepository;
 import api.enem.web.dto.user.UserRequestDto;
 import api.enem.web.dto.user.UserResponseDto;
+import api.enem.web.exception.UserAlreadyExists;
+import api.enem.web.exception.UserNotFoundException;
 import api.enem.web.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -62,12 +64,12 @@ public class UserService {
 
     private void findByEmail(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("User with email '" + email + "' already exists");
+            throw new UserAlreadyExists("User with email '" + email + "' already exists");
         }
     }
 
     private User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("User not found with id " + id));
+                () -> new UserNotFoundException("User not found with id " + id));
     }
 }

@@ -3,6 +3,7 @@ package api.enem.service;
 import api.enem.model.Exam;
 import api.enem.repository.ExamRepository;
 import api.enem.web.dto.exam.ExamResponseDto;
+import api.enem.web.exception.NoExamsFoundException;
 import api.enem.web.mapper.ExamMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class ExamService {
 
     public ExamResponseDto getByYear(int year) {
         Exam exam = examRepository.findByYear(year).orElseThrow(
-                () -> new RuntimeException("No exams found in the database.")
+                NoExamsFoundException::new
         );
 
         return examMapper.toResponseDto(exam);
