@@ -42,6 +42,16 @@ public class QuestionService {
         return questions.map(questionMapper::toResponseDto);
     }
 
+    public Page<QuestionResponseDto> getByContext(String context, Pageable pageable) {
+        Page<Question> questions = questionRepository.findByContextContainingIgnoreCase(context, pageable);
+
+        if (questions.isEmpty()) {
+            throw new IllegalStateException("No questions found for context: " + context);
+        }
+
+        return questions.map(questionMapper::toResponseDto);
+    }
+
     private QuestionApiResponse callApi(Integer year) {
         return restTemplate.getForObject(questionsUrl, QuestionApiResponse.class, year);
     }

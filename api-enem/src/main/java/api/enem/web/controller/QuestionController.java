@@ -21,6 +21,12 @@ public class QuestionController {
         return questionService.getByDiscipline(discipline, pageable);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/by-context")
+    public Page<QuestionResponseDto> getByContext(@RequestParam String context, Pageable pageable) {
+        return questionService.getByContext(context, pageable);
+    }
+
     @GetMapping("/fetch-and-save")
     @ResponseStatus(HttpStatus.OK)
     public String saveQuestionsForAllExams() {
