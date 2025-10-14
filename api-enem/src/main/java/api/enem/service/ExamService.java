@@ -21,7 +21,7 @@ public class ExamService {
     private final ExamRepository examRepository;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String examsUrl = "https://api.enem.dev/v1/exams";
+    private static final String API_EXAMS_URL = "https://api.enem.dev/v1/exams";
 
     public Page<ExamResponseDto> getAll(Pageable pageable) {
         return examRepository.findAll(pageable)
@@ -38,7 +38,7 @@ public class ExamService {
 
     @Transactional
     public Page<ExamResponseDto> fetchAndSaveExamsFromApi(Pageable pageable) {
-        ExamResponseDto[] examsDto = restTemplate.getForObject(examsUrl, ExamResponseDto[].class);
+        ExamResponseDto[] examsDto = restTemplate.getForObject(API_EXAMS_URL, ExamResponseDto[].class);
 
         if (examsDto != null) {
             Arrays.stream(examsDto)

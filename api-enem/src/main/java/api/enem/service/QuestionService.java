@@ -11,6 +11,7 @@ import api.enem.web.mapper.QuestionAlternativeMapper;
 import api.enem.web.mapper.QuestionMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class QuestionService {
@@ -31,7 +33,7 @@ public class QuestionService {
     private final QuestionAlternativeMapper questionAlternativeMapper;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String questionsUrl = "https://api.enem.dev/v1/exams/{year}/questions";
+    private static final String API_QUESTIONS_URL = "https://api.enem.dev/v1/exams/{year}/questions";
 
     public Page<QuestionResponseDto> getByDiscipline(String discipline, Pageable pageable) {
         Page<Question> questions = questionRepository.findByDiscipline(discipline, pageable);
@@ -64,7 +66,7 @@ public class QuestionService {
     }
 
     private QuestionApiResponse callApi(Integer year) {
-        return restTemplate.getForObject(questionsUrl, QuestionApiResponse.class, year);
+        return restTemplate.getForObject(API_QUESTIONS_URL, QuestionApiResponse.class, year);
     }
 
     @Async
@@ -78,18 +80,18 @@ public class QuestionService {
 
         for (Exam exam : exams) {
             try {
-                System.out.println("Looking for exam questions of " + exam.getYear() + "...");
+                log.info("Fetching questions for exam year: {}", exam.getYear());
                 fetchAndSaveQuestionsFromApi(exam.getYear());
                 Thread.sleep(7000);
             } catch (HttpClientErrorException.TooManyRequests e) {
-                System.out.println("Limit reached! Waiting 10 seconds...");
+                log.warn("API rate limit reached. Waiting 10 seconds before retrying...");
                 try { Thread.sleep(10000); } catch (InterruptedException ignored) {}
             } catch (Exception e) {
-                System.out.println("Error saving exam questions of " + exam.getYear() + ": " + e.getMessage());
+                log.error("Error while saving questions for exam year {}: {}", exam.getYear(), e.getMessage(), e);
             }
         }
 
-        System.out.println("Finished saving all questions!");
+        log.info("Finished saving all questions!");
     }
 
     @Transactional

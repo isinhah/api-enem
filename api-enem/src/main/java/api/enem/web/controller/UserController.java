@@ -3,6 +3,7 @@ package api.enem.web.controller;
 import api.enem.service.UserService;
 import api.enem.web.dto.user.UserRequestDto;
 import api.enem.web.dto.user.UserResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,27 +20,27 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
         UserResponseDto userResponseDto = userService.getById(id);
         return ResponseEntity.ok(userResponseDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
+    public ResponseEntity<Page<UserResponseDto>> getAll(Pageable pageable) {
         Page<UserResponseDto> page = userService.getAll(pageable);
         return ResponseEntity.ok(page);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public UserResponseDto create(@RequestBody UserRequestDto dto) {
+    public UserResponseDto create(@Valid @RequestBody UserRequestDto dto) {
         return userService.create(dto);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public UserResponseDto update(@PathVariable Long id, @RequestBody UserRequestDto dto) {
+    public UserResponseDto update(@PathVariable Long id, @Valid @RequestBody UserRequestDto dto) {
         return userService.update(id, dto);
     }
 }
