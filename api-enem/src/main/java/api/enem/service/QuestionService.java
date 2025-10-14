@@ -80,29 +80,40 @@ public class QuestionService {
         }
 
         for (Exam exam : exams) {
-            try {
-                log.info("Fetching questions for exam year: {}", exam.getYear());
-                fetchAndSaveQuestionsFromApi(exam.getYear());
-                Thread.sleep(7000);
-            } catch (HttpClientErrorException.TooManyRequests e) {
-                log.warn("API rate limit reached. Waiting 10 seconds before retrying...");
-                try { Thread.sleep(10000); } catch (InterruptedException ignored) {
-                    throw new ExternalApiRateLimitException("API rate limit exceeded for year " + exam.getYear());
-                }
-            } catch (Exception e) {
-                log.error("Error while saving questions for exam year {}: {}", exam.getYear(), e.getMessage(), e);
-            }
+            processExamQuestions(exam);
         }
 
         log.info("Finished saving all questions!");
     }
 
-    @Transactional
+    private void processExamQuestions(Exam exam) {
+        try {
+            log.info("Fetching questions for exam of {}", exam.getYear());
+            fetchAndSaveQuestionsFromApi(exam.getYear());
+            Thread.sleep(7000);
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            handleRateLimit(e);
+        } catch (Exception e) {
+            log.error("Error while saving questions for exam year {}: {}", exam.getYear(), e.getMessage(), e);
+        }
+    }
+
+    private void handleRateLimit(HttpClientErrorException.TooManyRequests e) {
+        log.warn("API rate limit reached. Waiting 10 seconds before retrying...");
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted while waiting after rate limit", ie);
+        }
+    }
+
     public void fetchAndSaveQuestionsFromApi(Integer year) {
         QuestionApiResponse response = callApi(year);
 
         if (response == null || response.questions().isEmpty()) {
-            return;
+            throw new NoQuestionsFoundException("No questions returned by external API for year " + year);
         }
 
         Exam exam = examRepository.findByYear(year)
