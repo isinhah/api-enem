@@ -15,5 +15,6 @@ public interface ExamMapper {
     @Mapping(target = "languages", source = "languages")
     Exam toEntity(ExamResponseDto examResponseDto);
 
+    @Mapping(target = "id", source = "id")
     ExamResponseDto toResponseDto(Exam exam);
 }

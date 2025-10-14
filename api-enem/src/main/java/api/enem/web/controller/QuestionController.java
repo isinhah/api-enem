@@ -16,7 +16,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/discipline")
+    @GetMapping("/by-discipline")
     public Page<QuestionResponseDto> getByDiscipline(@RequestParam String discipline, Pageable pageable) {
         return questionService.getByDiscipline(discipline, pageable);
     }
