@@ -16,7 +16,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/by-discipline")
+    @GetMapping("/discipline")
     public Page<QuestionResponseDto> getByDiscipline(@RequestParam String discipline, Pageable pageable) {
         return questionService.getByDiscipline(discipline, pageable);
     }
@@ -29,7 +29,7 @@ public class QuestionController {
 
     @GetMapping("/fetch-and-save")
     @ResponseStatus(HttpStatus.OK)
-    public String saveQuestionsForAllExams() {
+    public String fetchAndSaveQuestions() {
         questionService.fetchAndSaveQuestionsForAllExams();
         return "Process started in background. Check logs for progress.";
     }

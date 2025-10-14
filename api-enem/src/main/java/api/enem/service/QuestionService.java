@@ -19,6 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -47,6 +48,16 @@ public class QuestionService {
 
         if (questions.isEmpty()) {
             throw new IllegalStateException("No questions found for context: " + context);
+        }
+
+        return questions.map(questionMapper::toResponseDto);
+    }
+
+    public Page<QuestionResponseDto> getByExamId(UUID examId, Pageable pageable) {
+        Page<Question> questions = questionRepository.findByExamId(examId, pageable);
+
+        if (questions.isEmpty()) {
+            throw new IllegalStateException("No questions found for exam with id: " + examId);
         }
 
         return questions.map(questionMapper::toResponseDto);

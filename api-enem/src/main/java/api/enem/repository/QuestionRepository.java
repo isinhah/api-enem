@@ -12,4 +12,5 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     boolean existsByExamAndIndex(Exam exam, Integer index);
     Page<Question> findByDiscipline(String discipline, Pageable pageable);
     Page<Question> findByContextContainingIgnoreCase(String context, Pageable pageable);
+    Page<Question> findByExamId(UUID id, Pageable pageable);
 }
