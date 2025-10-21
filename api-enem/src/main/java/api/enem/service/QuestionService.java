@@ -5,9 +5,11 @@ import api.enem.model.Question;
 import api.enem.model.QuestionAlternative;
 import api.enem.repository.ExamRepository;
 import api.enem.repository.QuestionRepository;
-import api.enem.web.dto.external_api.QuestionApiResponse;
+import api.enem.web.dto.external_api.MetadataDto;
+import api.enem.web.dto.external_api.QuestionPageResponse;
 import api.enem.web.dto.question.QuestionResponseDto;
-import api.enem.web.exception.*;
+import api.enem.web.exception.NoExamsFoundException;
+import api.enem.web.exception.NoQuestionsFoundException;
 import api.enem.web.mapper.QuestionAlternativeMapper;
 import api.enem.web.mapper.QuestionMapper;
 import jakarta.transaction.Transactional;
@@ -36,38 +38,50 @@ public class QuestionService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String API_QUESTIONS_URL = "https://api.enem.dev/v1/exams/{year}/questions";
 
-    public Page<QuestionResponseDto> getByDiscipline(String discipline, Pageable pageable) {
-        Page<Question> questions = questionRepository.findByDiscipline(discipline, pageable);
+    public QuestionPageResponse getByDiscipline(String discipline, Pageable pageable) {
+        Page<Question> questionsPage = questionRepository.findByDiscipline(discipline, pageable);
 
-        if (questions.isEmpty()) {
+        if (questionsPage.getTotalElements() == 0) {
             throw new NoQuestionsFoundException("No questions found for discipline: " + discipline);
         }
 
-        return questions.map(questionMapper::toResponseDto);
+        MetadataDto metadata = createMetadataDto(questionsPage);
+
+        List<QuestionResponseDto> questionDtos = mapPageContentToDtoList(questionsPage);
+
+        return new QuestionPageResponse(metadata, questionDtos);
     }
 
-    public Page<QuestionResponseDto> getByContext(String context, Pageable pageable) {
-        Page<Question> questions = questionRepository.findByContextContainingIgnoreCase(context, pageable);
+    public QuestionPageResponse getByContext(String context, Pageable pageable) {
+        Page<Question> questionsPage = questionRepository.findByContextContainingIgnoreCase(context, pageable);
 
-        if (questions.isEmpty()) {
+        if (questionsPage.getTotalElements() == 0) {
             throw new NoQuestionsFoundException("No questions found for context: " + context);
         }
 
-        return questions.map(questionMapper::toResponseDto);
+        MetadataDto metadata = createMetadataDto(questionsPage);
+
+        List<QuestionResponseDto> questionDtos = mapPageContentToDtoList(questionsPage);
+
+        return new QuestionPageResponse(metadata, questionDtos);
     }
 
-    public Page<QuestionResponseDto> getByExamId(UUID examId, Pageable pageable) {
-        Page<Question> questions = questionRepository.findByExamId(examId, pageable);
+    public QuestionPageResponse getByExamId(UUID examId, Pageable pageable) {
+        Page<Question> questionsPage = questionRepository.findByExamId(examId, pageable);
 
-        if (questions.isEmpty()) {
+        if (questionsPage.getTotalElements() == 0) {
             throw new NoQuestionsFoundException("No questions found for Exam with id: " + examId);
         }
 
-        return questions.map(questionMapper::toResponseDto);
+        MetadataDto metadata = createMetadataDto(questionsPage);
+
+        List<QuestionResponseDto> questionDtos = mapPageContentToDtoList(questionsPage);
+
+        return new QuestionPageResponse(metadata, questionDtos);
     }
 
-    private QuestionApiResponse callApi(Integer year) {
-        return restTemplate.getForObject(API_QUESTIONS_URL, QuestionApiResponse.class, year);
+    private QuestionPageResponse callApi(Integer year) {
+        return restTemplate.getForObject(API_QUESTIONS_URL, QuestionPageResponse.class, year);
     }
 
     @Async
@@ -110,7 +124,7 @@ public class QuestionService {
     }
 
     public void fetchAndSaveQuestionsFromApi(Integer year) {
-        QuestionApiResponse response = callApi(year);
+        QuestionPageResponse response = callApi(year);
 
         if (response == null || response.questions().isEmpty()) {
             throw new NoQuestionsFoundException("No questions returned by external API for year " + year);
@@ -144,5 +158,22 @@ public class QuestionService {
 
         question.setAlternatives(alternatives);
         return question;
+    }
+
+    private List<QuestionResponseDto> mapPageContentToDtoList(Page<Question> questionsPage) {
+        return questionsPage
+                .getContent()
+                .stream()
+                .map(questionMapper::toResponseDto)
+                .toList();
+    }
+
+    private MetadataDto createMetadataDto(Page<?> page) {
+        return new MetadataDto(
+                page.getSize(),
+                page.getNumber(),
+                (int) page.getTotalElements(),
+                page.hasNext()
+        );
     }
 }

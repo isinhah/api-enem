@@ -3,11 +3,14 @@ package api.enem.web.controller;
 import api.enem.service.ExamService;
 import api.enem.service.QuestionService;
 import api.enem.web.dto.exam.ExamResponseDto;
+import api.enem.web.dto.external_api.QuestionPageResponse;
 import api.enem.web.dto.question.QuestionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -34,11 +37,12 @@ public class ExamController {
 
     @GetMapping("/{examId}/questions")
     @ResponseStatus(HttpStatus.OK)
-    public Page<QuestionResponseDto> getQuestionsByExam(
+    public ResponseEntity<QuestionPageResponse> getQuestionsByExam(
             @PathVariable UUID examId,
-            Pageable pageable
+            @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
-        return questionService.getByExamId(examId, pageable);
+        QuestionPageResponse response = questionService.getByExamId(examId, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @ResponseStatus(HttpStatus.OK)

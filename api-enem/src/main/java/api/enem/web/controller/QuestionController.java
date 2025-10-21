@@ -1,11 +1,14 @@
 package api.enem.web.controller;
 
 import api.enem.service.QuestionService;
+import api.enem.web.dto.external_api.QuestionPageResponse;
 import api.enem.web.dto.question.QuestionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -15,16 +18,22 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/by-discipline")
-    public Page<QuestionResponseDto> getByDiscipline(@RequestParam String discipline, Pageable pageable) {
-        return questionService.getByDiscipline(discipline, pageable);
+    @GetMapping("/discipline/{discipline}")
+    public ResponseEntity<QuestionPageResponse> getByDiscipline(
+            @PathVariable String discipline,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        QuestionPageResponse response = questionService.getByDiscipline(discipline, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/by-context")
-    public Page<QuestionResponseDto> getByContext(@RequestParam String context, Pageable pageable) {
-        return questionService.getByContext(context, pageable);
+    @GetMapping("/context/{context}")
+    public ResponseEntity<QuestionPageResponse> getByContext(
+            @PathVariable String context,
+            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+        QuestionPageResponse response = questionService.getByContext(context, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/fetch-and-save")

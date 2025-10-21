@@ -4,7 +4,7 @@ import api.enem.web.dto.question.QuestionResponseDto;
 
 import java.util.List;
 
-public record QuestionApiResponse(
+public record QuestionPageResponse(
         MetadataDto metadata,
         List<QuestionResponseDto> questions
 ) {
