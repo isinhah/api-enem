@@ -1,6 +1,7 @@
 package api.enem.web.controller;
 
 import api.enem.service.UserService;
+import api.enem.web.dto.user.ChangePasswordRequestDto;
 import api.enem.web.dto.user.UserRequestDto;
 import api.enem.web.dto.user.UserResponseDto;
 import jakarta.validation.Valid;
@@ -42,5 +43,11 @@ public class UserController {
     @PutMapping("/{id}")
     public UserResponseDto update(@PathVariable Long id, @Valid @RequestBody UserRequestDto dto) {
         return userService.update(id, dto);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/{id}/password")
+    public void changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto dto) {
+        userService.changePassword(id, dto);
     }
 }

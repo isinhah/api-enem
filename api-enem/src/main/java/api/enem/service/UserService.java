@@ -3,6 +3,7 @@ package api.enem.service;
 import api.enem.model.User;
 import api.enem.model.enums.Role;
 import api.enem.repository.UserRepository;
+import api.enem.web.dto.user.ChangePasswordRequestDto;
 import api.enem.web.dto.user.UserRequestDto;
 import api.enem.web.dto.user.UserResponseDto;
 import api.enem.web.exception.UserAlreadyExists;
@@ -53,6 +54,18 @@ public class UserService {
 
         User updatedUser = userRepository.save(user);
         return userMapper.toResponseDto(updatedUser);
+    }
+
+    @Transactional
+    public void changePassword(Long id, ChangePasswordRequestDto dto) {
+        User user = findById(id);
+
+        if (!dto.currentPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect.");
+        }
+
+        user.setPassword(dto.newPassword());
+        userRepository.save(user);
     }
 
     private UserResponseDto saveUserWithRole(UserRequestDto dto, Role role) {
