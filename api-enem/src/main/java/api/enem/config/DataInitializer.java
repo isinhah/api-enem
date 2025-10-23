@@ -5,6 +5,7 @@ import api.enem.model.enums.Role;
 import api.enem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -19,7 +21,7 @@ public class DataInitializer implements CommandLineRunner {
             User admin = new User();
             admin.setName("admin1");
             admin.setEmail("admin1@email.com");
-            admin.setPassword("123456");
+            admin.setPassword(passwordEncoder.encode("123456"));
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
         }

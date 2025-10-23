@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
@@ -26,6 +28,7 @@ public class UserController {
         return ResponseEntity.ok(userResponseDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<Page<UserResponseDto>> getAll(Pageable pageable) {
@@ -33,18 +36,14 @@ public class UserController {
         return ResponseEntity.ok(page);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public UserResponseDto create(@Valid @RequestBody UserRequestDto dto) {
-        return userService.create(dto);
-    }
-
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
     public UserResponseDto update(@PathVariable Long id, @Valid @RequestBody UserRequestDto dto) {
         return userService.update(id, dto);
     }
 
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping("/{id}/password")
     public void changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto dto) {

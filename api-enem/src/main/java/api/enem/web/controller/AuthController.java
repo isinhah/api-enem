@@ -1,6 +1,8 @@
 package api.enem.web.controller;
 
-import api.enem.service.UserService;
+import api.enem.service.AuthService;
+import api.enem.web.dto.auth.AuthResponseDto;
+import api.enem.web.dto.auth.LoginRequestDto;
 import api.enem.web.dto.user.UserRequestDto;
 import api.enem.web.dto.user.UserResponseDto;
 import jakarta.validation.Valid;
@@ -13,11 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/login")
+    public AuthResponseDto login(@Valid @RequestBody LoginRequestDto dto) {
+        return authService.login(dto);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/admins")
-    public UserResponseDto createAdmin(@Valid @RequestBody UserRequestDto dto) {
-        return userService.createAdmin(dto);
+    @PostMapping("/register")
+    public UserResponseDto register(@Valid @RequestBody UserRequestDto dto) {
+        return authService.register(dto);
     }
 }
